@@ -44,3 +44,34 @@ jobs:
         grep -q "lamp_post" common/src/main/java/com/flanks255/simplylight/SLBlocks.java
         grep -q "edge_light" common/src/main/java/com/flanks255/simplylight/SLBlocks.java
         echo "✓ All critical block IDs found in registration code"
+    
+    - name: Verify Item Model Definitions
+      run: |
+        echo "Checking that all items have item definition JSONs (1.21.4+ requirement)..."
+        
+        # Extract all registered item IDs from SLBlocks.java
+        MISSING=0
+        
+        # Check critical items exist
+        for item in illuminant_block illuminant_block_on illuminant_slab illuminant_panel \
+                    wall_lamp lightbulb rodlamp edge_light edge_light_top lamp_post; do
+          if [ ! -f "fabric/src/main/resources/assets/simplylight/items/${item}.json" ]; then
+            echo "ERROR: Missing item definition for ${item}"
+            MISSING=1
+          fi
+        done
+        
+        # Count total item JSONs
+        ITEM_COUNT=$(find fabric/src/main/resources/assets/simplylight/items -name "*.json" 2>/dev/null | wc -l)
+        echo "Found ${ITEM_COUNT} item definition files"
+        
+        if [ ${ITEM_COUNT} -lt 40 ]; then
+          echo "ERROR: Expected at least 40 item definitions (one per legacy block), found ${ITEM_COUNT}"
+          MISSING=1
+        fi
+        
+        if [ ${MISSING} -eq 1 ]; then
+          exit 1
+        fi
+        
+        echo "✓ All required item definitions present (${ITEM_COUNT} total)"

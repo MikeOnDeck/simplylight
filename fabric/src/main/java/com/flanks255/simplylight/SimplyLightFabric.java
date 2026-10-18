@@ -23,11 +23,7 @@ public class SimplyLightFabric implements ModInitializer {
     public static final List<Pair<String, ? extends Block>> BLOCKS = new ArrayList<>();
     public static final List<Pair<String, ? extends Item>> ITEMS = new ArrayList<>();
 
-    public static final CreativeModeTab ITEM_GROUP = FabricItemGroup.builder()
-            .icon(() -> new ItemStack(SLBlocks.ILLUMINANTBLOCK_ON.getItem()))
-            .title(Component.translatable("itemGroup.simplylight"))
-            .displayItems(SimplyLightCommon.TAB_ITEMS)
-            .build();
+    public static CreativeModeTab ITEM_GROUP;
 
     public SimplyLightFabric() {
         SLBlocks.load();
@@ -37,6 +33,13 @@ public class SimplyLightFabric implements ModInitializer {
     public void onInitialize() {
         registerBlocksAndItems();
         SimplyLightCommon.init();
+        
+        // Register creative tab AFTER items are registered
+        ITEM_GROUP = FabricItemGroup.builder()
+                .icon(() -> new ItemStack(SLBlocks.ILLUMINANTBLOCK_ON.getItem()))
+                .title(Component.translatable("itemGroup.simplylight"))
+                .displayItems(SimplyLightCommon.TAB_ITEMS)
+                .build();
         Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, SimplyLightCommon.SLRes("simplylight"), ITEM_GROUP);
 
         PayloadTypeRegistry.playS2C().register(OpenEdgeEditorPacket.TYPE, OpenEdgeEditorPacket.STREAM_CODEC);
