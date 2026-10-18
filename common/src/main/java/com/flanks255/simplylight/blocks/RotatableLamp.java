@@ -48,7 +48,6 @@ public abstract class RotatableLamp extends LampBase implements SimpleWaterlogge
         };
     }
 
-    @Override
     public boolean canPlaceLiquid(Player player, @NotNull BlockGetter world, @NotNull BlockPos blockpos, @NotNull BlockState blockState, @NotNull Fluid fluid) {
         return true;
     }

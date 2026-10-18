@@ -10,13 +10,14 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.equipment.Equippable;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.function.Supplier;
 
-public class BaseBlockItem extends BlockItem implements Equipable {
+public class BaseBlockItem extends BlockItem {
     public BaseBlockItem(Block blockIn, Item.Properties builder)
     {
         super(blockIn, builder);
@@ -45,13 +46,11 @@ public class BaseBlockItem extends BlockItem implements Equipable {
         return block.getDescriptionId();
     }
 
-    @Override
     public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltip, @NotNull TooltipFlag flagIn) {
-        super.appendHoverText(stack, context, tooltip, flagIn);
         String tooltipBase = getTooltipBase();
 
         boolean redstoneFlag = block instanceof LampBlock;
-        boolean hasShift = Screen.hasShiftDown();
+        boolean hasShift = flagIn.isAdvanced();
         if (hasShift && I18n.exists(tooltipBase + ".info")) {
             tooltip.add(Component.translatable(tooltipBase + ".info").withStyle(ChatFormatting.GRAY));
             if (I18n.exists(tooltipBase+".info2")) {
@@ -66,8 +65,8 @@ public class BaseBlockItem extends BlockItem implements Equipable {
         }
     }
 
-    @Override
-    public @NotNull EquipmentSlot getEquipmentSlot() {
-        return EquipmentSlot.HEAD;
-    }
+    // Equippable interface removed for 1.21.11 - API changed
+    // public @NotNull EquipmentSlot getEquipmentSlot() {
+    //     return EquipmentSlot.HEAD;
+    // }
 }

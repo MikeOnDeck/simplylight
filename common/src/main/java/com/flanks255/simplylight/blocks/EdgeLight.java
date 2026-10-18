@@ -38,7 +38,7 @@ public class EdgeLight extends LampBase implements SimpleWaterloggedBlock {
     public EdgeLight(Boolean top, DyeColor color, Block.Properties properties) {
         super(properties
             .strength(1.0f)
-            .noCollission()
+            .noCollision()
             .lightLevel($ -> 14)
         );
         this.color = color;
@@ -92,7 +92,7 @@ public class EdgeLight extends LampBase implements SimpleWaterloggedBlock {
     @NotNull
     @Override
     protected InteractionResult useWithoutItem(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull BlockHitResult hitResult) {
-        if (!level.isClientSide && player.isCrouching() && player instanceof ServerPlayer serverPlayer) {
+        if (!level.isClientSide() && player.isCrouching() && player instanceof ServerPlayer serverPlayer) {
             byte stateByte = 0;
             stateByte += (byte) (state.getValue(NORTH)?1:0);
             stateByte += (byte) (state.getValue(EAST)?2:0);
@@ -106,7 +106,7 @@ public class EdgeLight extends LampBase implements SimpleWaterloggedBlock {
     }
 
     public static void updateShape(Level level, BlockPos pos, byte state) {
-        if (level.isClientSide)
+        if (level.isClientSide())
             return;
         if (level.getBlockState(pos).getBlock() instanceof EdgeLight) {
             BlockState blockState = level.getBlockState(pos);
@@ -136,7 +136,6 @@ public class EdgeLight extends LampBase implements SimpleWaterloggedBlock {
             .setValue(WEST, checkSide(context, Direction.WEST));
     }
 
-    @Override
     public boolean canPlaceLiquid(Player pPlayer, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, @NotNull Fluid pFluid) {
         return true;
     }

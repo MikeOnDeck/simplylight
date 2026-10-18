@@ -20,9 +20,6 @@
         ],
         "client": [
           "com.flanks255.simplylight.SimplyLightFabricClient"
-        ],
-        "fabric-datagen": [
-          "com.flanks255.simplylight.datagen.Generator"
         ]
     },
     "depends": {

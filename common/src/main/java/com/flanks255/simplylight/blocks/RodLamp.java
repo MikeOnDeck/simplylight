@@ -57,7 +57,6 @@ public class RodLamp extends LampBase implements SimpleWaterloggedBlock {
         return defaultBlockState().setValue(BlockStateProperties.AXIS, placeContext.getClickedFace().getAxis()).setValue(BlockStateProperties.WATERLOGGED, false);
     }
 
-    @Override
     public boolean canPlaceLiquid(Player player, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, @NotNull Fluid pFluid) {
         return true;
     }

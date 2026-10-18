@@ -55,7 +55,6 @@ public class LampPost extends LampBase implements SimpleWaterloggedBlock {
         return false;
     }
 
-    @Override
     public boolean canPlaceLiquid(Player player, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull BlockState pState, @NotNull Fluid pFluid) {
         return SimpleWaterloggedBlock.super.canPlaceLiquid(player, pLevel, pPos, pState, pFluid);
     }
@@ -98,9 +97,7 @@ public class LampPost extends LampBase implements SimpleWaterloggedBlock {
             return null;
     }
 
-    @Override
-    public void onRemove(@NotNull BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pNewState, boolean pIsMoving) {
-        super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
+    protected void onRemove(@NotNull BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull BlockState pNewState, boolean pIsMoving) {
         if (pNewState.getBlock() == this)
             return;
         switch (pState.getValue(POSITION)) {

@@ -8,7 +8,7 @@ import java.util.function.BiConsumer;
 public class LightBulb extends RotatableLamp {
     public LightBulb(DyeColor color, Block.Properties properties) {
         super(properties
-            .noCollission()
+            .noCollision()
             .strength(1.0f)
             .lightLevel($ -> 14));
         UP = Block.box(6, 0, 6, 10, 5, 10);

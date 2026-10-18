@@ -55,7 +55,7 @@ public class LampBlock extends LampBase {
     }
 
     @Override
-    protected void neighborChanged(@NotNull BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull Block pBlock, @Nullable net.minecraft.core.Orientation pOrientation, boolean pIsMoving) {
+    protected void neighborChanged(@NotNull BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull Block pBlock, @Nullable net.minecraft.world.level.redstone.Orientation pOrientation, boolean pIsMoving) {
         super.neighborChanged(pState, pLevel, pPos, pBlock, pOrientation, pIsMoving);
         boolean on = Default != pLevel.hasNeighborSignal(pPos);
         pLevel.setBlockAndUpdate(pPos, defaultBlockState().setValue(ON, on));
