@@ -1,0 +1,46 @@
+name: Build Simply Light
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: gradle
+    
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    
+    - name: Build with Gradle
+      run: ./gradlew :fabric:build --no-daemon
+    
+    - name: Upload Fabric JAR
+      uses: actions/upload-artifact@v4
+      with:
+        name: simplylight-fabric-1.21.11
+        path: fabric/build/libs/*-1.21.11-*.jar
+        if-no-files-found: error
+        retention-days: 30
+    
+    - name: Verify Block IDs (Basic Check)
+      run: |
+        echo "Checking that all block registrations are present in code..."
+        # Verify critical block IDs are in the source
+        grep -q "illuminant_block_on" common/src/main/java/com/flanks255/simplylight/SLBlocks.java
+        grep -q "illuminant_slab" common/src/main/java/com/flanks255/simplylight/SLBlocks.java
+        grep -q "wall_lamp" common/src/main/java/com/flanks255/simplylight/SLBlocks.java
+        grep -q "lamp_post" common/src/main/java/com/flanks255/simplylight/SLBlocks.java
+        grep -q "edge_light" common/src/main/java/com/flanks255/simplylight/SLBlocks.java
+        echo "✓ All critical block IDs found in registration code"
