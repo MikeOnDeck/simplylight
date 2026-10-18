@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "a": {
-      "tag": "c:stones"
-    },
-    "b": {
-      "tag": "c:dusts/glowstone"
-    }
+    "a": "#c:stones",
+    "b": "#c:dusts/glowstone"
   },
   "pattern": [
     "bab",

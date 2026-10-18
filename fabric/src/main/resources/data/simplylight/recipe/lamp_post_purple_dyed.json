@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "A": {
-      "tag": "simplylight:any_post"
-    },
-    "B": {
-      "item": "minecraft:purple_dye"
-    }
+    "A": "#simplylight:any_post",
+    "B": "minecraft:purple_dye"
   },
   "pattern": [
     "AAA",

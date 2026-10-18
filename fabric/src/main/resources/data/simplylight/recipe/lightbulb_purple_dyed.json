@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "A": {
-      "tag": "simplylight:any_bulb"
-    },
-    "B": {
-      "item": "minecraft:purple_dye"
-    }
+    "A": "#simplylight:any_bulb",
+    "B": "minecraft:purple_dye"
   },
   "pattern": [
     "AAA",

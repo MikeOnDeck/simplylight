@@ -34,6 +34,10 @@ jobs:
         if-no-files-found: error
         retention-days: 30
     
+    - name: Verify recipe ingredients (1.21.2+ format)
+      run: |
+        python3 .github/workflows/validate-recipe-ingredients.py
+
     - name: Verify Data Pack Integrity (JSON Validation)
       run: |
         python3 .github/workflows/validate-data-json.py

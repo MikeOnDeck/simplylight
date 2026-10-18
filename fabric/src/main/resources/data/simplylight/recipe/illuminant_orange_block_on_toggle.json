@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "simplylight:illuminant_orange_block"
-    }
+    "simplylight:illuminant_orange_block"
   ],
   "result": {
     "count": 1,

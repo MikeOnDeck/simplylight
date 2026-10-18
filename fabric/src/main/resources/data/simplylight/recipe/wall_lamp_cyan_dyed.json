@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "A": {
-      "tag": "simplylight:any_fixture"
-    },
-    "B": {
-      "item": "minecraft:cyan_dye"
-    }
+    "A": "#simplylight:any_fixture",
+    "B": "minecraft:cyan_dye"
   },
   "pattern": [
     "AAA",

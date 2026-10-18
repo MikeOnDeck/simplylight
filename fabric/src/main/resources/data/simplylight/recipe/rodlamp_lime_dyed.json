@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "A": {
-      "tag": "simplylight:any_rod"
-    },
-    "B": {
-      "item": "minecraft:lime_dye"
-    }
+    "A": "#simplylight:any_rod",
+    "B": "minecraft:lime_dye"
   },
   "pattern": [
     "AAA",

@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "a": {
-      "item": "minecraft:glowstone"
-    },
-    "b": {
-      "tag": "c:stones"
-    }
+    "a": "minecraft:glowstone",
+    "b": "#c:stones"
   },
   "pattern": [
     "b b",

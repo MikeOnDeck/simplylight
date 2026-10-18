@@ -2,9 +2,7 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "A": {
-      "item": "simplylight:illuminant_slab_red"
-    }
+    "A": "simplylight:illuminant_slab_red"
   },
   "pattern": [
     "AAA"

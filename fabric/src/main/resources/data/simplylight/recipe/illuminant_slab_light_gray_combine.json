@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "simplylight:illuminant_panel_light_gray"
-    },
-    {
-      "item": "simplylight:illuminant_panel_light_gray"
-    }
+    "simplylight:illuminant_panel_light_gray",
+    "simplylight:illuminant_panel_light_gray"
   ],
   "result": {
     "count": 1,

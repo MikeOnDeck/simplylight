@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "A": {
-      "tag": "simplylight:any_panel"
-    },
-    "B": {
-      "item": "minecraft:lime_dye"
-    }
+    "A": "#simplylight:any_panel",
+    "B": "minecraft:lime_dye"
   },
   "pattern": [
     "AAA",

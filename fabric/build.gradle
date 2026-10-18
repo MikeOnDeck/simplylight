@@ -32,6 +32,13 @@ loom {
             ideConfigGenerated(true)
             runDir('runs/server')
         }
+        serverSmoke {
+            server()
+            setConfigName('Fabric Server Smoke Test')
+            ideConfigGenerated(false)
+            runDir('runs/server-smoke')
+            vmArg '-Dsimplylight.smokeTest=true'
+        }
         datagen {
             server()
             setConfigName('Fabric Datagen')
