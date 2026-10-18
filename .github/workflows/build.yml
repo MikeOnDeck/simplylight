@@ -34,6 +34,15 @@ jobs:
         if-no-files-found: error
         retention-days: 30
     
+    - name: Verify Data Pack Integrity (JSON Validation)
+      run: |
+        python3 .github/workflows/validate-data-json.py
+    
+    - name: Verify Data Pack Integrity (Shell Script)
+      run: |
+        chmod +x .github/workflows/verify-fabric-data.sh
+        .github/workflows/verify-fabric-data.sh
+    
     - name: Verify Block IDs (Basic Check)
       run: |
         echo "Checking that all block registrations are present in code..."
