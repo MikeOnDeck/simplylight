@@ -41,6 +41,7 @@ public class SimplyLightFabric implements ModInitializer {
                 .displayItems(SimplyLightCommon.TAB_ITEMS)
                 .build();
         Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, SimplyLightCommon.SLRes("simplylight"), ITEM_GROUP);
+        SimplyLightCommon.LOGGER.info("Registered Simply Light creative tab with key: {}", SimplyLightCommon.SLRes("simplylight"));
 
         PayloadTypeRegistry.playS2C().register(OpenEdgeEditorPacket.TYPE, OpenEdgeEditorPacket.STREAM_CODEC);
         PayloadTypeRegistry.playC2S().register(UpdateEdgeLightPacket.TYPE, UpdateEdgeLightPacket.STREAM_CODEC);

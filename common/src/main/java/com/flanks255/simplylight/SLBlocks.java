@@ -228,7 +228,7 @@ public class SLBlocks {
 
     public static SLBlockReg<LampPost, LampPostItem> addPost(DyeColor color) {
         String name = "lamp_post_" + color.getName();
-        return new SLBlockReg<>(name, () -> new LampPost(color, makeBlockProperties(name)), b -> new LampPostItem(b, makeItemProperties(name).attributes(LampPostItem.createAttributes())));
+        return new SLBlockReg<>(name, () -> new LampPost(color, makeBlockProperties(name)), b -> new LampPostItem(b, makeItemProperties(name), LAMP_POST));
     }
 
     public static SLBlockReg<EdgeLight, BaseBlockItem> addEdge(DyeColor color, boolean top) {
