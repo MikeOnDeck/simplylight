@@ -6,8 +6,8 @@ import net.minecraft.world.level.block.Block;
 import java.util.function.BiConsumer;
 
 public class LightBulb extends RotatableLamp {
-    public LightBulb(DyeColor color) {
-        super(Block.Properties.of()
+    public LightBulb(DyeColor color, Block.Properties properties) {
+        super(properties
             .noCollission()
             .strength(1.0f)
             .lightLevel($ -> 14));

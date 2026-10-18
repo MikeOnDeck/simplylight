@@ -12,12 +12,12 @@ import java.util.function.Supplier;
 
 
 public class LampPostItem extends BaseBlockItem {
-    public LampPostItem(Block pBlock, SLBlockReg<?,?> alternateTooltipBlock) {
-        super(pBlock, new Item.Properties().attributes(createAttributes()), alternateTooltipBlock);
+    public LampPostItem(Block pBlock, Item.Properties properties) {
+        super(pBlock, properties.attributes(createAttributes()));
     }
 
-    public LampPostItem(Block blockIn, Properties builder) {
-        super(blockIn, builder);
+    public LampPostItem(Block pBlock, SLBlockReg<?,?> alternateTooltipBlock) {
+        super(pBlock, new Item.Properties().attributes(createAttributes()).useBlockDescriptionPrefix(), alternateTooltipBlock);
     }
 
     private static ItemAttributeModifiers createAttributes() {

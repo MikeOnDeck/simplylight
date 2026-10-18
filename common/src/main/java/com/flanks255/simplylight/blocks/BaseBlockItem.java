@@ -7,7 +7,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.Block;
@@ -30,9 +30,9 @@ public class BaseBlockItem extends BlockItem implements Equipable {
         this.alternateTooltipBlock = alternateTooltipBlock;
     }
 
-    private final Supplier<ResourceLocation> lazyRes = Suppliers.memoize(() -> BuiltInRegistries.ITEM.getKey(this));
+    private final Supplier<Identifier> lazyRes = Suppliers.memoize(() -> BuiltInRegistries.ITEM.getKey(this));
 
-    public ResourceLocation getRegistryName() {
+    public Identifier getRegistryName() {
         return lazyRes.get();
     }
 
@@ -51,7 +51,8 @@ public class BaseBlockItem extends BlockItem implements Equipable {
         String tooltipBase = getTooltipBase();
 
         boolean redstoneFlag = block instanceof LampBlock;
-        if (Screen.hasShiftDown() && I18n.exists(tooltipBase + ".info")) {
+        boolean hasShift = Screen.hasShiftDown();
+        if (hasShift && I18n.exists(tooltipBase + ".info")) {
             tooltip.add(Component.translatable(tooltipBase + ".info").withStyle(ChatFormatting.GRAY));
             if (I18n.exists(tooltipBase+".info2")) {
                 if (redstoneFlag)

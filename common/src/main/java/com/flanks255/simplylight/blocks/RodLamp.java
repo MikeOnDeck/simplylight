@@ -23,8 +23,8 @@ import java.util.function.BiConsumer;
 
 @SuppressWarnings("deprecation")
 public class RodLamp extends LampBase implements SimpleWaterloggedBlock {
-    public RodLamp (DyeColor color) {
-        super(Block.Properties.of()
+    public RodLamp (DyeColor color, Block.Properties properties) {
+        super(properties
             .pushReaction(PushReaction.NORMAL)
             .mapColor(MapColor.TERRACOTTA_WHITE)
             .strength(1.0f)

@@ -1,7 +1,11 @@
 package com.flanks255.simplylight.platform;
 
+import com.flanks255.simplylight.SimplyLightCommon;
 import com.flanks255.simplylight.SimplyLightFabric;
 import com.flanks255.simplylight.platform.services.IRegistrationHelper;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import oshi.util.tuples.Pair;

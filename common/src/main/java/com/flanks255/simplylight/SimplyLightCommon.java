@@ -1,7 +1,7 @@
 package com.flanks255.simplylight;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -42,7 +42,7 @@ public class SimplyLightCommon {
 
     }
 
-    public static ResourceLocation SLRes(String path) {
-        return ResourceLocation.fromNamespaceAndPath(MODID, path);
+    public static Identifier SLRes(String path) {
+        return Identifier.fromNamespaceAndPath(MODID, path);
     }
 }

@@ -35,8 +35,8 @@ public class EdgeLight extends LampBase implements SimpleWaterloggedBlock {
     public final Boolean top;
     public final DyeColor color;
 
-    public EdgeLight(Boolean top, DyeColor color) {
-        super(Block.Properties.of()
+    public EdgeLight(Boolean top, DyeColor color, Block.Properties properties) {
+        super(properties
             .strength(1.0f)
             .noCollission()
             .lightLevel($ -> 14)

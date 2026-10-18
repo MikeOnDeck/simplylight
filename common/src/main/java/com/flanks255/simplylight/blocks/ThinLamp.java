@@ -17,8 +17,8 @@ public class ThinLamp extends RotatableLamp {
     private final double thickness;
     public final DyeColor color;
 
-    public ThinLamp(double thickness, DyeColor colorIn) {
-        super(Block.Properties.of()
+    public ThinLamp(double thickness, DyeColor colorIn, Block.Properties properties) {
+        super(properties
             .pushReaction(PushReaction.NORMAL)
             .lightLevel($ -> 15)
             .strength(1.0f));

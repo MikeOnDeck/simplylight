@@ -38,8 +38,8 @@ public class LampPost extends LampBase implements SimpleWaterloggedBlock {
 
     public final DyeColor color;
 
-    public LampPost(DyeColor color) {
-        super(Block.Properties.of()
+    public LampPost(DyeColor color, Block.Properties properties) {
+        super(properties
             .mapColor(MapColor.COLOR_BLACK)
             .pushReaction(PushReaction.DESTROY)
             .lightLevel( (bState) -> bState.getValue(POSITION) == Position.TOP?15:0)
@@ -92,7 +92,7 @@ public class LampPost extends LampBase implements SimpleWaterloggedBlock {
     public BlockState getStateForPlacement(BlockPlaceContext pContext) {
         BlockPos clickedPos = pContext.getClickedPos();
         Level level = pContext.getLevel();
-        if (clickedPos.getY() < level.getMaxBuildHeight() - 2  && level.getBlockState(clickedPos.above()).canBeReplaced(pContext) && level.getBlockState(clickedPos.above(2)).canBeReplaced(pContext))
+        if (clickedPos.getY() < level.getMaxY() - 3  && level.getBlockState(clickedPos.above()).canBeReplaced(pContext) && level.getBlockState(clickedPos.above(2)).canBeReplaced(pContext))
             return defaultBlockState().setValue(POSITION, Position.BOTTOM).setValue(BlockStateProperties.WATERLOGGED, false);
         else
             return null;

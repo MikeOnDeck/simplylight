@@ -2,7 +2,7 @@ package com.flanks255.simplylight;
 
 
 import com.flanks255.simplylight.platform.Services;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 
@@ -13,7 +13,7 @@ public class SLBlockReg<B extends Block, I extends Item> implements Supplier<B> 
     private final Supplier<B> block;
     private final Supplier<I> item;
 
-    private final ResourceLocation registryName;
+    private final Identifier registryName;
 
     @Override
     public B get() {
@@ -35,7 +35,7 @@ public class SLBlockReg<B extends Block, I extends Item> implements Supplier<B> 
         return item.get();
     }
 
-    public ResourceLocation getRegistryName() {
+    public Identifier getRegistryName() {
         return registryName;
     }
 }
