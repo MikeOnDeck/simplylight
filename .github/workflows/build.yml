@@ -43,6 +43,10 @@ jobs:
         chmod +x .github/workflows/verify-fabric-data.sh
         .github/workflows/verify-fabric-data.sh
     
+    - name: Verify Item Definitions
+      run: |
+        python3 .github/workflows/validate-item-definitions.py
+    
     - name: Verify Block IDs (Basic Check)
       run: |
         echo "Checking that all block registrations are present in code..."
