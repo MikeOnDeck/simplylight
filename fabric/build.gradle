@@ -4,12 +4,12 @@ plugins {
 }
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
-    mappings loom.layered {
-        officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-${parchment_minecraft}:${parchment_version}@zip")
-    }
+    mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+    // Exclude problematic javadoc-related module that causes Loom configuration errors
+    modImplementation("net.fabricmc.fabric-api:fabric-api:${fabric_version}") {
+        exclude group: 'net.fabricmc.fabric-api', module: 'fabric-content-registries-v0'
+    }
 }
 
 loom {
