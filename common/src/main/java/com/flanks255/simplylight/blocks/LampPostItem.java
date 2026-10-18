@@ -16,11 +16,7 @@ public class LampPostItem extends BaseBlockItem {
         super(pBlock, properties.attributes(createAttributes()));
     }
 
-    public LampPostItem(Block pBlock, SLBlockReg<?,?> alternateTooltipBlock) {
-        super(pBlock, new Item.Properties().attributes(createAttributes()).useBlockDescriptionPrefix(), alternateTooltipBlock);
-    }
-
-    private static ItemAttributeModifiers createAttributes() {
+    public static ItemAttributeModifiers createAttributes() {
         ItemAttributeModifiers.Builder builder = ItemAttributeModifiers.builder();
         builder.add(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_ID,4.0f, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND);
         builder.add(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_ID, -2.0f, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND);
