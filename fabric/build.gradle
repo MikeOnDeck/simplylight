@@ -11,6 +11,19 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
 }
 
+def ensureDedicatedServerAcceptsEula = { runDir ->
+    def dir = file(runDir)
+    dir.mkdirs()
+    def eula = new File(dir, 'eula.txt')
+    if (!eula.exists()) {
+        eula.text = 'eula=true\n'
+    }
+    def props = new File(dir, 'server.properties')
+    if (!props.exists()) {
+        props.text = 'online-mode=false\n'
+    }
+}
+
 loom {
     def aw = project(':common').file("src/main/resources/${mod_id}.accesswidener")
     if (aw.exists()) {
@@ -39,6 +52,21 @@ loom {
             runDir('runs/server-smoke')
             vmArg '-Dsimplylight.smokeTest=true'
         }
+        serverRecipeVerify {
+            server()
+            setConfigName('Fabric Server Recipe Verification')
+            ideConfigGenerated(false)
+            runDir('runs/server-recipe-verify')
+            vmArg '-Dsimplylight.recipeVerify=true'
+        }
+        clientCraftingScreenshots {
+            client()
+            setConfigName('Fabric Client Crafting Screenshots')
+            ideConfigGenerated(false)
+            runDir('runs/client-crafting-screenshots')
+            vmArg '-Dsimplylight.craftingScreenshots=true'
+            vmArg '-Dfabric-tag-conventions-v2.missingTagTranslationWarning=SILENCED'
+        }
         datagen {
             server()
             setConfigName('Fabric Datagen')
@@ -47,6 +75,20 @@ loom {
             vmArg "-Dfabric-api.datagen.modid=simplylight"
             vmArg "-Dfabric-api.datagen.output-dir=${file("src/main/generated")}"
             runDir('build/datagen')
+        }
+    }
+}
+
+afterEvaluate {
+    tasks.matching { it.name in ['runServer', 'runServerSmoke', 'runServerRecipeVerify'] }.configureEach { task ->
+        task.doFirst {
+            if (task.name == 'runServerSmoke') {
+                ensureDedicatedServerAcceptsEula('runs/server-smoke')
+            } else if (task.name == 'runServerRecipeVerify') {
+                ensureDedicatedServerAcceptsEula('runs/server-recipe-verify')
+            } else {
+                ensureDedicatedServerAcceptsEula('runs/server')
+            }
         }
     }
 }

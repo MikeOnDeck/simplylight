@@ -52,7 +52,14 @@ public final class SimplyLightRuntimeChecks {
                 tabItemCount
         );
 
-        if (Boolean.getBoolean("simplylight.smokeTest")) {
+        boolean recipeVerify = Boolean.getBoolean("simplylight.recipeVerify");
+        boolean smokeTest = Boolean.getBoolean("simplylight.smokeTest");
+
+        if (recipeVerify || smokeTest) {
+            SimplyLightRecipeVerifier.verify(server);
+        }
+
+        if (smokeTest) {
             if (recipeCount < 230 || !tabRegistered || !tabShouldDisplay || tabItemCount < 100) {
                 throw new IllegalStateException(
                         "Smoke test failed: recipes=" + recipeCount + ", tabRegistered=" + tabRegistered
@@ -60,6 +67,11 @@ public final class SimplyLightRuntimeChecks {
                 );
             }
             SimplyLightCommon.LOGGER.info("{} smoke test complete, stopping server", VERIFY_LOG_PREFIX);
+            server.halt(false);
+        }
+
+        if (recipeVerify && !smokeTest) {
+            SimplyLightCommon.LOGGER.info("{} recipe verification complete, stopping server", VERIFY_LOG_PREFIX);
             server.halt(false);
         }
     }

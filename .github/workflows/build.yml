@@ -24,6 +24,19 @@ jobs:
     
     - name: Build with Gradle
       run: ./gradlew :fabric:build --no-daemon
+
+    - name: List recipes vs registered items
+      run: python3 .github/scripts/list-mod-recipes.py
+
+    - name: Verify crafting recipes in-game (RecipeManager + craft simulation)
+      run: |
+        set -o pipefail
+        ./gradlew :fabric:runServerRecipeVerify --no-daemon 2>&1 | tee recipe-verify.log
+        if grep -iE "Couldn't parse recipe|Failed to parse recipe|Parsing error loading recipe" recipe-verify.log; then
+          echo "Recipe parse errors detected in log"
+          exit 1
+        fi
+        grep -q "recipe verification complete" recipe-verify.log
     
     - name: Upload Fabric JAR
       uses: actions/upload-artifact@v4
