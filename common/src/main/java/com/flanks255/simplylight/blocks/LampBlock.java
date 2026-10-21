@@ -22,8 +22,8 @@ public class LampBlock extends LampBase {
     public static final BooleanProperty ON = BooleanProperty.create("on");
     public final DyeColor color;
 
-    public LampBlock(boolean Default, DyeColor colorIn) {
-        super(Block.Properties.of()
+    public LampBlock(boolean Default, DyeColor colorIn, Block.Properties properties) {
+        super(properties
             .strength(1.0f)
             .pushReaction(PushReaction.NORMAL)
             .mapColor(state -> state.getValue(ON) ? MapColor.COLOR_LIGHT_GRAY : MapColor.COLOR_BLACK)
@@ -55,8 +55,8 @@ public class LampBlock extends LampBase {
     }
 
     @Override
-    public void neighborChanged(@NotNull BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull Block pBlock, @NotNull BlockPos pFromPos, boolean pIsMoving) {
-        super.neighborChanged(pState, pLevel, pPos, pBlock, pFromPos, pIsMoving);
+    protected void neighborChanged(@NotNull BlockState pState, @NotNull Level pLevel, @NotNull BlockPos pPos, @NotNull Block pBlock, @Nullable net.minecraft.world.level.redstone.Orientation pOrientation, boolean pIsMoving) {
+        super.neighborChanged(pState, pLevel, pPos, pBlock, pOrientation, pIsMoving);
         boolean on = Default != pLevel.hasNeighborSignal(pPos);
         pLevel.setBlockAndUpdate(pPos, defaultBlockState().setValue(ON, on));
     }

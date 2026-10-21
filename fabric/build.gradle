@@ -6,7 +6,6 @@ dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
     mappings loom.layered {
         officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-${parchment_minecraft}:${parchment_version}@zip")
     }
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
@@ -32,6 +31,13 @@ loom {
             setConfigName('Fabric Server')
             ideConfigGenerated(true)
             runDir('runs/server')
+        }
+        serverSmoke {
+            server()
+            setConfigName('Fabric Server Smoke Test')
+            ideConfigGenerated(false)
+            runDir('runs/server-smoke')
+            vmArg '-Dsimplylight.smokeTest=true'
         }
         datagen {
             server()

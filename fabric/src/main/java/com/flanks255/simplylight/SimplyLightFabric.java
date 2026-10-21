@@ -9,6 +9,7 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -23,11 +24,7 @@ public class SimplyLightFabric implements ModInitializer {
     public static final List<Pair<String, ? extends Block>> BLOCKS = new ArrayList<>();
     public static final List<Pair<String, ? extends Item>> ITEMS = new ArrayList<>();
 
-    public static final CreativeModeTab ITEM_GROUP = FabricItemGroup.builder()
-            .icon(() -> new ItemStack(SLBlocks.ILLUMINANTBLOCK_ON.getItem()))
-            .title(Component.translatable("itemGroup.simplylight"))
-            .displayItems(SimplyLightCommon.TAB_ITEMS)
-            .build();
+    public static CreativeModeTab ITEM_GROUP;
 
     public SimplyLightFabric() {
         SLBlocks.load();
@@ -37,7 +34,17 @@ public class SimplyLightFabric implements ModInitializer {
     public void onInitialize() {
         registerBlocksAndItems();
         SimplyLightCommon.init();
-        Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, SimplyLightCommon.SLRes("simplylight"), ITEM_GROUP);
+
+        ResourceKey<CreativeModeTab> tabKey = SimplyLightCommon.LIGHTS_TAB;
+        ITEM_GROUP = FabricItemGroup.builder()
+                .icon(() -> new ItemStack(SLBlocks.ILLUMINANTBLOCK_ON.getItem()))
+                .title(Component.translatable("itemGroup.simplylight"))
+                .displayItems(SimplyLightCommon.TAB_ITEMS)
+                .build();
+        Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, tabKey, ITEM_GROUP);
+        SimplyLightCommon.LOGGER.info("Registered Simply Light creative tab: {}", tabKey.identifier());
+
+        SimplyLightRuntimeChecks.register();
 
         PayloadTypeRegistry.playS2C().register(OpenEdgeEditorPacket.TYPE, OpenEdgeEditorPacket.STREAM_CODEC);
         PayloadTypeRegistry.playC2S().register(UpdateEdgeLightPacket.TYPE, UpdateEdgeLightPacket.STREAM_CODEC);

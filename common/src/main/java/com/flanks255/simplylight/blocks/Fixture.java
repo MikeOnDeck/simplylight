@@ -7,8 +7,8 @@ import net.minecraft.world.phys.shapes.Shapes;
 import java.util.function.BiConsumer;
 
 public class Fixture extends RotatableLamp{
-    public Fixture(DyeColor color) {
-        super(Block.Properties.of().noCollission().strength(1.0f).lightLevel($ -> 15));
+    public Fixture(DyeColor color, Block.Properties properties) {
+        super(properties.noCollision().strength(1.0f).lightLevel($ -> 15));
 
         UP = Shapes.box(0.375,0.0, 0.375,0.625, 0.125,0.625);
         DOWN = Shapes.box(0.375, 1.0 - 0.125, 0.375, 0.625, 1.0, 0.625);

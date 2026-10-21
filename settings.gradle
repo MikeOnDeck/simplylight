@@ -56,5 +56,6 @@ plugins {
 rootProject.name = 'simplylight'
 include('common')
 include('fabric')
-include('neoforge')
-include('forge')
+// Excluded for 1.21.11 Fabric-only port
+// include('neoforge')
+// include('forge')

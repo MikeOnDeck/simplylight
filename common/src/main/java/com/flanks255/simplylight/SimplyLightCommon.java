@@ -1,7 +1,8 @@
 package com.flanks255.simplylight;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -11,6 +12,10 @@ import org.slf4j.LoggerFactory;
 public class SimplyLightCommon {
     public static final String MODID = "simplylight";
     public static final Logger LOGGER = LoggerFactory.getLogger("Simply Light");
+    public static final ResourceKey<CreativeModeTab> LIGHTS_TAB = ResourceKey.create(
+            Registries.CREATIVE_MODE_TAB,
+            SLRes("lights")
+    );
 
     public static final TagKey<Item> ANY_ON_LAMP = TagKey.create(Registries.ITEM, SLRes("any_lamp_on"));
     public static final TagKey<Item> ANY_OFF_LAMP = TagKey.create(Registries.ITEM, SLRes("any_lamp_off"));
@@ -42,7 +47,7 @@ public class SimplyLightCommon {
 
     }
 
-    public static ResourceLocation SLRes(String path) {
-        return ResourceLocation.fromNamespaceAndPath(MODID, path);
+    public static Identifier SLRes(String path) {
+        return Identifier.fromNamespaceAndPath(MODID, path);
     }
 }

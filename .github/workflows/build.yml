@@ -1,0 +1,93 @@
+name: Build Simply Light
+
+on:
+  push:
+    branches: [main, 1.21.11-fabric]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: gradle
+    
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    
+    - name: Build with Gradle
+      run: ./gradlew :fabric:build --no-daemon
+    
+    - name: Upload Fabric JAR
+      uses: actions/upload-artifact@v4
+      with:
+        name: simplylight-fabric-1.21.11
+        path: fabric/build/libs/*-1.21.11-*.jar
+        if-no-files-found: error
+        retention-days: 30
+    
+    - name: Verify recipe ingredients (1.21.2+ format)
+      run: |
+        python3 .github/workflows/validate-recipe-ingredients.py
+
+    - name: Verify Data Pack Integrity (JSON Validation)
+      run: |
+        python3 .github/workflows/validate-data-json.py
+    
+    - name: Verify Data Pack Integrity (Shell Script)
+      run: |
+        chmod +x .github/workflows/verify-fabric-data.sh
+        .github/workflows/verify-fabric-data.sh
+    
+    - name: Verify Item Definitions
+      run: |
+        python3 .github/workflows/validate-item-definitions.py
+    
+    - name: Verify Block IDs (Basic Check)
+      run: |
+        echo "Checking that all block registrations are present in code..."
+        # Verify critical block IDs are in the source
+        grep -q "illuminant_block_on" common/src/main/java/com/flanks255/simplylight/SLBlocks.java
+        grep -q "illuminant_slab" common/src/main/java/com/flanks255/simplylight/SLBlocks.java
+        grep -q "wall_lamp" common/src/main/java/com/flanks255/simplylight/SLBlocks.java
+        grep -q "lamp_post" common/src/main/java/com/flanks255/simplylight/SLBlocks.java
+        grep -q "edge_light" common/src/main/java/com/flanks255/simplylight/SLBlocks.java
+        echo "✓ All critical block IDs found in registration code"
+    
+    - name: Verify Item Model Definitions
+      run: |
+        echo "Checking that all items have item definition JSONs (1.21.4+ requirement)..."
+        
+        # Extract all registered item IDs from SLBlocks.java
+        MISSING=0
+        
+        # Check critical items exist
+        for item in illuminant_block illuminant_block_on illuminant_slab illuminant_panel \
+                    wall_lamp lightbulb rodlamp edge_light edge_light_top lamp_post; do
+          if [ ! -f "fabric/src/main/resources/assets/simplylight/items/${item}.json" ]; then
+            echo "ERROR: Missing item definition for ${item}"
+            MISSING=1
+          fi
+        done
+        
+        # Count total item JSONs
+        ITEM_COUNT=$(find fabric/src/main/resources/assets/simplylight/items -name "*.json" 2>/dev/null | wc -l)
+        echo "Found ${ITEM_COUNT} item definition files"
+        
+        if [ ${ITEM_COUNT} -lt 40 ]; then
+          echo "ERROR: Expected at least 40 item definitions (one per legacy block), found ${ITEM_COUNT}"
+          MISSING=1
+        fi
+        
+        if [ ${MISSING} -eq 1 ]; then
+          exit 1
+        fi
+        
+        echo "✓ All required item definitions present (${ITEM_COUNT} total)"
