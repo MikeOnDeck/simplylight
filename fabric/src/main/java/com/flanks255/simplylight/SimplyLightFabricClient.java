@@ -10,5 +10,6 @@ public class SimplyLightFabricClient implements ClientModInitializer {
     public void onInitializeClient() {
         ClientPlayNetworking.registerGlobalReceiver(OpenEdgeEditorPacket.TYPE, ((payload, context) -> ClientPacketStuff.OpenEdgeEditorPacket(payload)));
         SimplyLightCraftingScreenshotClient.register();
+        SimplyLightLampPostScreenshotClient.register();
     }
 }

@@ -67,6 +67,14 @@ loom {
             vmArg '-Dsimplylight.craftingScreenshots=true'
             vmArg '-Dfabric-tag-conventions-v2.missingTagTranslationWarning=SILENCED'
         }
+        clientLampPostScreenshots {
+            client()
+            setConfigName('Fabric Client Lamp Post Screenshots')
+            ideConfigGenerated(false)
+            runDir('runs/client-lamp-post-screenshots')
+            vmArg '-Dsimplylight.lampPostScreenshots=true'
+            vmArg '-Dfabric-tag-conventions-v2.missingTagTranslationWarning=SILENCED'
+        }
         datagen {
             server()
             setConfigName('Fabric Datagen')
