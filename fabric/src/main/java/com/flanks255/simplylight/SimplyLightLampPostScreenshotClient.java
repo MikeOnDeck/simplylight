@@ -29,27 +29,47 @@ import java.nio.file.Path;
 import java.util.List;
 
 /**
- * Headless-friendly harness: builds each lamp-post acceptance scene in a flat world and saves PNGs.
+ * Headless-friendly harness: flat grass pad with open sky, lamp post scenes, side-view PNGs.
  */
 @Environment(EnvType.CLIENT)
 public final class SimplyLightLampPostScreenshotClient {
-    private static final String WORLD_NAME = "lamp_post_screenshots";
-    private static BlockPos sceneAnchor = BlockPos.ZERO;
-    private static final List<String> SCENARIOS = List.of(
-            "column-stone-bottom-slab",
-            "column-oak-bottom-slab",
-            "column-full-block",
-            "column-top-slab",
-            "column-break-slab-under",
-            "column-break-top-removes-all",
-            "column-top-emits-light"
+    private static final String WORLD_NAME = "lamp_post_screenshots_v2";
+    /** Grass block Y; support (slab/full block) sits here; column bottom is one block above. */
+    private static final int FLOOR_Y = 80;
+    private static final BlockPos COLUMN_BOTTOM = new BlockPos(0, FLOOR_Y + 1, 0);
+    private static final int PAD_RADIUS = 8;
+
+    private enum SceneKind {
+        STONE_BOTTOM_SLAB,
+        OAK_BOTTOM_SLAB,
+        FULL_BLOCK,
+        TOP_SLAB,
+        BREAK_SLAB_UNDER,
+        BREAK_TOP,
+        TOP_EMITS_LIGHT
+    }
+
+    private record Capture(SceneKind scene, String fileName, boolean closeUp) {}
+
+    private static final List<Capture> CAPTURES = List.of(
+            new Capture(SceneKind.STONE_BOTTOM_SLAB, "column-stone-bottom-slab", false),
+            new Capture(SceneKind.STONE_BOTTOM_SLAB, "column-stone-bottom-slab-close", true),
+            new Capture(SceneKind.OAK_BOTTOM_SLAB, "column-oak-bottom-slab", false),
+            new Capture(SceneKind.OAK_BOTTOM_SLAB, "column-oak-bottom-slab-close", true),
+            new Capture(SceneKind.FULL_BLOCK, "column-full-block", false),
+            new Capture(SceneKind.TOP_SLAB, "column-top-slab", false),
+            new Capture(SceneKind.BREAK_SLAB_UNDER, "column-break-slab-under", false),
+            new Capture(SceneKind.BREAK_TOP, "column-break-top-removes-all", false),
+            new Capture(SceneKind.TOP_EMITS_LIGHT, "column-top-emits-light", false)
     );
 
     private static int tickCounter;
     private static Phase phase = Phase.BOOTSTRAP_WORLD;
-    private static int scenarioIndex;
+    private static int captureIndex;
+    private static SceneKind builtScene;
     private static int waitTicks;
     private static boolean screenshotWritePending;
+    private static boolean padPrepared;
 
     private enum Phase {
         BOOTSTRAP_WORLD,
@@ -92,6 +112,15 @@ public final class SimplyLightLampPostScreenshotClient {
             if (waitTicks < 80) {
                 return;
             }
+            var server = client.getSingleplayerServer();
+            if (server != null) {
+                server.execute(() -> {
+                    ServerLevel level = server.overworld();
+                    preparePad(level);
+                    ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
+                    player.teleportTo(level, 0.5, FLOOR_Y + 1.0, 6.5, java.util.Set.of(), 180, 0, true);
+                });
+            }
             phase = Phase.BUILD_SCENE;
             waitTicks = 0;
         }
@@ -104,7 +133,7 @@ public final class SimplyLightLampPostScreenshotClient {
             case BUILD_SCENE -> buildScene(client);
             case POSITION_CAMERA -> positionCamera(client);
             case CAPTURE -> captureScreenshot(client);
-            case NEXT -> advanceScenario(client);
+            case NEXT -> advanceCapture(client);
             case DONE -> client.stop();
             default -> {
             }
@@ -135,15 +164,31 @@ public final class SimplyLightLampPostScreenshotClient {
         );
     }
 
-    private static void clearColumnArea(ServerLevel level) {
-        BlockPos slabPos = sceneAnchor.below();
-        for (int x = -2; x <= 2; x++) {
-            for (int y = -2; y <= 4; y++) {
-                for (int z = -2; z <= 2; z++) {
-                    level.setBlockAndUpdate(slabPos.offset(x, y, z), Blocks.AIR.defaultBlockState());
+    private static void preparePad(ServerLevel level) {
+        BlockPos floorOrigin = new BlockPos(0, FLOOR_Y, 0);
+        for (int dx = -PAD_RADIUS; dx <= PAD_RADIUS; dx++) {
+            for (int dz = -PAD_RADIUS; dz <= PAD_RADIUS; dz++) {
+                BlockPos floor = floorOrigin.offset(dx, 0, dz);
+                level.setBlock(floor, Blocks.GRASS_BLOCK.defaultBlockState(), 3);
+                for (int dy = 1; dy <= 5; dy++) {
+                    level.setBlock(floor.above(dy), Blocks.AIR.defaultBlockState(), 3);
                 }
             }
         }
+        padPrepared = true;
+    }
+
+    private static void resetColumnFootprint(ServerLevel level) {
+        BlockPos support = COLUMN_BOTTOM.below();
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                for (int dy = 0; dy <= 3; dy++) {
+                    BlockPos p = COLUMN_BOTTOM.offset(dx, dy, dz);
+                    level.setBlock(p, Blocks.AIR.defaultBlockState(), 3);
+                }
+            }
+        }
+        level.setBlock(support, Blocks.GRASS_BLOCK.defaultBlockState(), 3);
     }
 
     private static void placeColumn(ServerLevel level, BlockPos bottomPos) {
@@ -154,6 +199,43 @@ public final class SimplyLightLampPostScreenshotClient {
                 .setValue(LampPost.LOWERED, lowered);
         level.setBlock(bottomPos, state, 3);
         post.setPlacedBy(level, bottomPos, state, null, ItemStack.EMPTY);
+    }
+
+    private static void buildSceneKind(ServerLevel level, SceneKind scene) {
+        BlockPos support = COLUMN_BOTTOM.below();
+        resetColumnFootprint(level);
+        switch (scene) {
+            case STONE_BOTTOM_SLAB -> {
+                level.setBlockAndUpdate(support, Blocks.STONE_SLAB.defaultBlockState());
+                placeColumn(level, COLUMN_BOTTOM);
+            }
+            case OAK_BOTTOM_SLAB -> {
+                level.setBlockAndUpdate(support, Blocks.OAK_SLAB.defaultBlockState());
+                placeColumn(level, COLUMN_BOTTOM);
+            }
+            case FULL_BLOCK -> {
+                level.setBlockAndUpdate(support, Blocks.STONE.defaultBlockState());
+                placeColumn(level, COLUMN_BOTTOM);
+            }
+            case TOP_SLAB -> {
+                level.setBlockAndUpdate(support, Blocks.OAK_SLAB.defaultBlockState().setValue(SlabBlock.TYPE, SlabType.TOP));
+                placeColumn(level, COLUMN_BOTTOM);
+            }
+            case BREAK_SLAB_UNDER -> {
+                level.setBlockAndUpdate(support, Blocks.STONE_SLAB.defaultBlockState());
+                placeColumn(level, COLUMN_BOTTOM);
+                level.setBlockAndUpdate(support, Blocks.GRASS_BLOCK.defaultBlockState());
+            }
+            case BREAK_TOP -> {
+                level.setBlockAndUpdate(support, Blocks.STONE_SLAB.defaultBlockState());
+                placeColumn(level, COLUMN_BOTTOM);
+                level.destroyBlock(COLUMN_BOTTOM.above(2), false);
+            }
+            case TOP_EMITS_LIGHT -> {
+                level.setBlockAndUpdate(support, Blocks.STONE_SLAB.defaultBlockState());
+                placeColumn(level, COLUMN_BOTTOM);
+            }
+        }
     }
 
     private static void buildScene(Minecraft client) {
@@ -168,48 +250,16 @@ public final class SimplyLightLampPostScreenshotClient {
         if (server == null) {
             return;
         }
+        Capture capture = CAPTURES.get(captureIndex);
         server.execute(() -> {
             ServerLevel level = server.overworld();
-            ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
-            if (scenarioIndex == 0) {
-                sceneAnchor = player.blockPosition();
+            if (!padPrepared) {
+                preparePad(level);
             }
-            clearColumnArea(level);
-            String scenario = SCENARIOS.get(scenarioIndex);
-            BlockPos slabPos = sceneAnchor.below();
-            BlockPos bottom = sceneAnchor;
-            switch (scenario) {
-                case "column-stone-bottom-slab" -> {
-                    level.setBlockAndUpdate(slabPos, Blocks.STONE_SLAB.defaultBlockState());
-                    placeColumn(level, bottom);
-                }
-                case "column-oak-bottom-slab" -> {
-                    level.setBlockAndUpdate(slabPos, Blocks.OAK_SLAB.defaultBlockState());
-                    placeColumn(level, bottom);
-                }
-                case "column-full-block" -> {
-                    level.setBlockAndUpdate(slabPos, Blocks.STONE.defaultBlockState());
-                    placeColumn(level, bottom);
-                }
-                case "column-top-slab" -> {
-                    level.setBlockAndUpdate(slabPos, Blocks.OAK_SLAB.defaultBlockState().setValue(SlabBlock.TYPE, SlabType.TOP));
-                    placeColumn(level, bottom);
-                }
-                case "column-break-slab-under" -> {
-                    level.setBlockAndUpdate(slabPos, Blocks.STONE_SLAB.defaultBlockState());
-                    placeColumn(level, bottom);
-                    level.setBlockAndUpdate(slabPos, Blocks.AIR.defaultBlockState());
-                }
-                case "column-break-top-removes-all" -> {
-                    level.setBlockAndUpdate(slabPos, Blocks.STONE_SLAB.defaultBlockState());
-                    placeColumn(level, bottom);
-                    level.destroyBlock(bottom.above(2), false);
-                }
-                case "column-top-emits-light" -> {
-                    level.setBlockAndUpdate(slabPos, Blocks.STONE_SLAB.defaultBlockState());
-                    placeColumn(level, bottom);
-                }
-                default -> throw new IllegalStateException("Unknown scenario " + scenario);
+            SceneKind needed = capture.scene();
+            if (needed != builtScene) {
+                buildSceneKind(level, needed);
+                builtScene = needed;
             }
         });
         phase = Phase.POSITION_CAMERA;
@@ -226,20 +276,37 @@ public final class SimplyLightLampPostScreenshotClient {
             return;
         }
         if (waitTicks == 10) {
+            Capture capture = CAPTURES.get(captureIndex);
+            double distance = capture.closeUp() ? 2.25 : 3.75;
+            double lookUp = capture.closeUp() ? 0.45 : 1.1;
             server.execute(() -> {
                 ServerLevel level = server.overworld();
-                level.getChunk(sceneAnchor.getX() >> 4, sceneAnchor.getZ() >> 4);
+                level.getChunk(COLUMN_BOTTOM.getX() >> 4, COLUMN_BOTTOM.getZ() >> 4);
                 ServerPlayer player = server.getPlayerList().getPlayers().getFirst();
-                String scenario = SCENARIOS.get(scenarioIndex);
-                Vec3 columnCenter = Vec3.atCenterOf(sceneAnchor).add(0, 1.5, 0);
-                player.teleportTo(level, sceneAnchor.getX() + 2.5, sceneAnchor.getY() + 0.1, sceneAnchor.getZ() + 0.5, java.util.Set.of(), 0, 0, true);
-                aimAt(player, columnCenter);
+                double camX = COLUMN_BOTTOM.getX() + 0.5;
+                double camZ = COLUMN_BOTTOM.getZ() + distance + 0.5;
+                double camY = FLOOR_Y + 1.0;
+                player.teleportTo(level, camX, camY, camZ, java.util.Set.of(), 180, 0, true);
+                Vec3 target = Vec3.atCenterOf(COLUMN_BOTTOM).add(0, lookUp, 0);
+                aimAt(player, target);
                 player.setYHeadRot(player.getYRot());
             });
             return;
         }
-        if (waitTicks < 80) {
+        if (waitTicks < 60) {
             return;
+        }
+        Capture capture = CAPTURES.get(captureIndex);
+        if (client.player != null) {
+            double distance = capture.closeUp() ? 2.25 : 3.75;
+            double lookUp = capture.closeUp() ? 0.45 : 1.1;
+            double camX = COLUMN_BOTTOM.getX() + 0.5;
+            double camZ = COLUMN_BOTTOM.getZ() + distance + 0.5;
+            double camY = FLOOR_Y + 1.0;
+            Vec3 target = Vec3.atCenterOf(COLUMN_BOTTOM).add(0, lookUp, 0);
+            client.player.setPos(camX, camY, camZ);
+            client.player.setYRot(180);
+            aimAtClient(client.player, target);
         }
         client.options.hideGui = true;
         phase = Phase.CAPTURE;
@@ -248,14 +315,14 @@ public final class SimplyLightLampPostScreenshotClient {
 
     private static void captureScreenshot(Minecraft client) {
         waitTicks++;
-        if (waitTicks < 30) {
+        if (waitTicks < 40) {
             return;
         }
         if (screenshotWritePending) {
             return;
         }
         Path dir = client.gameDirectory.toPath().resolve("screenshots").resolve("simplylight-lamp-post");
-        String name = SCENARIOS.get(scenarioIndex) + ".png";
+        String name = CAPTURES.get(captureIndex).fileName() + ".png";
         try {
             Files.createDirectories(dir);
             screenshotWritePending = true;
@@ -291,14 +358,30 @@ public final class SimplyLightLampPostScreenshotClient {
         player.setYRot(yRot);
     }
 
-    private static void advanceScenario(Minecraft client) {
-        scenarioIndex++;
-        if (scenarioIndex >= SCENARIOS.size()) {
-            SimplyLightCommon.LOGGER.info("[SimplyLight lamp post screenshots] captured {} scenes", SCENARIOS.size());
+    private static void aimAtClient(net.minecraft.client.player.LocalPlayer player, Vec3 target) {
+        Vec3 eye = player.getEyePosition();
+        Vec3 diff = target.subtract(eye);
+        double horizontal = Math.sqrt(diff.x * diff.x + diff.z * diff.z);
+        float xRot = (float) (-(Math.atan2(diff.y, horizontal) * (180.0 / Math.PI)));
+        float yRot = (float) (Math.atan2(diff.z, diff.x) * (180.0 / Math.PI)) - 90.0f;
+        player.setXRot(xRot);
+        player.setYRot(yRot);
+    }
+
+    private static void advanceCapture(Minecraft client) {
+        captureIndex++;
+        if (captureIndex >= CAPTURES.size()) {
+            SimplyLightCommon.LOGGER.info("[SimplyLight lamp post screenshots] captured {} images", CAPTURES.size());
             phase = Phase.DONE;
             return;
         }
-        phase = Phase.BUILD_SCENE;
+        Capture next = CAPTURES.get(captureIndex);
+        Capture prev = CAPTURES.get(captureIndex - 1);
+        if (next.scene() != prev.scene()) {
+            phase = Phase.BUILD_SCENE;
+        } else {
+            phase = Phase.POSITION_CAMERA;
+        }
         waitTicks = 0;
     }
 }
