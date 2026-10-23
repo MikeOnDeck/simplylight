@@ -4,6 +4,40 @@ import sys
 import zipfile
 from pathlib import Path
 
+FABRIC_JAR_GLOB = "simplylight-fabric-*.jar"
+
+
+def resolve_fabric_jar() -> Path:
+    lib_dir = Path("fabric/build/libs")
+    if not lib_dir.is_dir():
+        print(f"ERROR: Directory not found: {lib_dir}")
+        sys.exit(1)
+
+    matches = [
+        p
+        for p in lib_dir.glob(FABRIC_JAR_GLOB)
+        if p.name.endswith("-fabric.jar")
+        and not p.name.endswith("-sources.jar")
+        and not p.name.endswith("-dev.jar")
+    ]
+
+    if not matches:
+        print(
+            "ERROR: No Fabric jar matching "
+            f"fabric/build/libs/{FABRIC_JAR_GLOB} (excluding -sources and -dev jars)"
+        )
+        sys.exit(1)
+    if len(matches) > 1:
+        print(
+            "ERROR: Multiple main Fabric jars matching "
+            f"fabric/build/libs/{FABRIC_JAR_GLOB} (excluding -sources and -dev jars):"
+        )
+        for path in sorted(matches):
+            print(f"  - {path}")
+        sys.exit(1)
+    return matches[0]
+
+
 def validate_json_files_in_jar(jar_path):
     """Validate all JSON files in the jar are parseable."""
     errors = []
@@ -40,11 +74,7 @@ def validate_json_files_in_jar(jar_path):
     return errors, recipe_count, loot_table_count, tag_count
 
 if __name__ == '__main__':
-    jar_path = 'fabric/build/libs/simplylight-fabric-1.21.11-1.5.4+1.21.11-fabric.jar'
-    
-    if not Path(jar_path).exists():
-        print(f"ERROR: Jar not found at {jar_path}")
-        sys.exit(1)
+    jar_path = resolve_fabric_jar()
     
     print("=== Validating JSON files in Fabric jar ===")
     errors, recipes, loot_tables, tags = validate_json_files_in_jar(jar_path)

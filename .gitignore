@@ -7,6 +7,7 @@ run/
 .gradle/
 .idea/
 logs/
+test-server/**/*.log
 runs/
 /fabric/logs/
 /fabric/runs/
