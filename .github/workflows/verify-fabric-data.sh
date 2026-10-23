@@ -3,10 +3,35 @@ set -e
 
 echo "=== Verifying Fabric jar data pack integrity ==="
 
-JAR_PATH="fabric/build/libs/simplylight-fabric-1.21.11-1.5.4+1.21.11-fabric.jar"
+JAR_GLOB="fabric/build/libs/simplylight-fabric-*.jar"
+JAR_PATH=""
+JAR_COUNT=0
+for candidate in $JAR_GLOB; do
+    [ -f "$candidate" ] || continue
+    case "$candidate" in
+        *-sources.jar|*-dev.jar) continue ;;
+        *-fabric.jar) ;;
+        *) continue ;;
+    esac
+    JAR_PATH="$candidate"
+    JAR_COUNT=$((JAR_COUNT + 1))
+done
 
-if [ ! -f "$JAR_PATH" ]; then
-    echo "ERROR: Fabric jar not found at $JAR_PATH"
+if [ "$JAR_COUNT" -eq 0 ]; then
+    echo "ERROR: No Fabric jar matching $JAR_GLOB (excluding -sources and -dev jars)"
+    exit 1
+fi
+if [ "$JAR_COUNT" -gt 1 ]; then
+    echo "ERROR: Multiple Fabric jars matching $JAR_GLOB (excluding -sources and -dev jars):"
+    for candidate in $JAR_GLOB; do
+        [ -f "$candidate" ] || continue
+        case "$candidate" in
+            *-sources.jar|*-dev.jar) continue ;;
+            *-fabric.jar) ;;
+            *) continue ;;
+        esac
+        echo "  - $candidate"
+    done
     exit 1
 fi
 

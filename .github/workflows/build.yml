@@ -2,7 +2,7 @@ name: Build Simply Light
 
 on:
   push:
-    branches: [main, 1.21.11-fabric]
+    branches: [1.21.11-fabric]
   pull_request:
   workflow_dispatch:
 
