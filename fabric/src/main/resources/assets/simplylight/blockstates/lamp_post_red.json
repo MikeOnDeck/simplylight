@@ -1,13 +1,22 @@
 {
   "variants": {
-    "position=bottom": {
+    "position=bottom,lowered=false": {
       "model": "simplylight:block/post_base"
     },
-    "position=middle": {
+    "position=bottom,lowered=true": {
+      "model": "simplylight:block/post_base_lowered"
+    },
+    "position=middle,lowered=false": {
       "model": "simplylight:block/post_mid"
     },
-    "position=top": {
+    "position=middle,lowered=true": {
+      "model": "simplylight:block/post_mid_lowered"
+    },
+    "position=top,lowered=false": {
       "model": "simplylight:block/post_top_red"
+    },
+    "position=top,lowered=true": {
+      "model": "simplylight:block/post_top_red_lowered"
     }
   }
 }

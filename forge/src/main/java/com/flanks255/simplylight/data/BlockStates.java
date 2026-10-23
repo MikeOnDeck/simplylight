@@ -247,13 +247,30 @@ public class BlockStates extends BlockStateProvider {
                     .texture("3_1", tex); //generate full model for the item.
         }
 
+        ModelFile baseLowered = models().getExistingFile(modLoc("block/post_base_lowered"));
+        ModelFile midLowered = models().getExistingFile(modLoc("block/post_mid_lowered"));
+        ModelFile topLowered;
+        if (color == DyeColor.WHITE) {
+            topLowered = models().getExistingFile(modLoc("block/post_top_lowered"));
+        } else {
+            ResourceLocation tex = modLoc("block/post/post_lightface_"+ color.getName());
+            topLowered = models().withExistingParent("block/post_top_" + color.getName() + "_lowered", modLoc("block/post_top_lowered"))
+                    .texture("1", tex);
+        }
+
         getVariantBuilder(block.get())
-            .partialState().with(LampPost.POSITION, LampPost.Position.BOTTOM).modelForState()
+            .partialState().with(LampPost.POSITION, LampPost.Position.BOTTOM).with(LampPost.LOWERED, false).modelForState()
             .modelFile(base).addModel()
-            .partialState().with(LampPost.POSITION, LampPost.Position.MIDDLE).modelForState()
+            .partialState().with(LampPost.POSITION, LampPost.Position.BOTTOM).with(LampPost.LOWERED, true).modelForState()
+            .modelFile(baseLowered).addModel()
+            .partialState().with(LampPost.POSITION, LampPost.Position.MIDDLE).with(LampPost.LOWERED, false).modelForState()
             .modelFile(mid).addModel()
-            .partialState().with(LampPost.POSITION, LampPost.Position.TOP).modelForState()
-            .modelFile(top).addModel();
+            .partialState().with(LampPost.POSITION, LampPost.Position.MIDDLE).with(LampPost.LOWERED, true).modelForState()
+            .modelFile(midLowered).addModel()
+            .partialState().with(LampPost.POSITION, LampPost.Position.TOP).with(LampPost.LOWERED, false).modelForState()
+            .modelFile(top).addModel()
+            .partialState().with(LampPost.POSITION, LampPost.Position.TOP).with(LampPost.LOWERED, true).modelForState()
+            .modelFile(topLowered).addModel();
     }
     private void generateWallLamp(SLBlockReg<Fixture, BaseBlockItem> block) {
         DyeColor color = block.getBlock().color;
